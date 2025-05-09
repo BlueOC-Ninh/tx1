@@ -16,17 +16,15 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author ninhdo
  */
 public class ConnectionPool {
-     private static ConnectionPool instance;
+    private static ConnectionPool instance;
     private final List<Connection> connectionPool;
     private final List<Connection> usedConnections = new ArrayList<>();
     private final Lock lock = new ReentrantLock();
     
     private ConnectionPool() {
         try {
-            // Tải driver JDBC
             Class.forName("com.mysql.cj.jdbc.Driver");
             
-            // Khởi tạo pool với các kết nối
             connectionPool = new ArrayList<>(DatabaseConfig.INITIAL_POOL_SIZE);
             for (int i = 0; i < DatabaseConfig.INITIAL_POOL_SIZE; i++) {
                 connectionPool.add(createConnection());
@@ -56,7 +54,6 @@ public class ConnectionPool {
             
             Connection connection = connectionPool.remove(connectionPool.size() - 1);
             
-            // Kiểm tra xem kết nối có bị đóng hoặc không hợp lệ
             if (connection.isClosed() || !connection.isValid(1)) {
                 connection = createConnection();
             }
@@ -103,7 +100,6 @@ public class ConnectionPool {
     public void shutdown() {
         lock.lock();
         try {
-            // Đóng tất cả các kết nối đang được sử dụng
             for (Connection connection : usedConnections) {
                 try {
                     connection.close();
@@ -113,7 +109,6 @@ public class ConnectionPool {
             }
             usedConnections.clear();
             
-            // Đóng tất cả các kết nối có sẵn
             for (Connection connection : connectionPool) {
                 try {
                     connection.close();

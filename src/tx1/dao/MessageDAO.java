@@ -24,8 +24,9 @@ import tx1.model.MessageStatistics;
 public class MessageDAO {
     
     private static final String SELECT_ALL = "SELECT * FROM message ORDER BY send_date DESC";
-    private static final String INSERT = "INSERT INTO message (content, send_date, user_id, room_id) VALUES (?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE message SET content = ?, send_date = ?, user_id = ?, room_id = ? WHERE id = ?";
+    private static final String INSERT = "INSERT INTO message (content, send_date, user_id, room_id, message_type_id) VALUES (?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE message SET content = ?, send_date = ?, user_id = ?, room_id = ?, message_type_id = ? WHERE id = ?";
+
     private static final String DELETE = "DELETE FROM message WHERE id = ?";
     private static final String SEARCH = "SELECT * FROM message WHERE content LIKE ? ORDER BY send_date DESC";
     
@@ -33,7 +34,6 @@ public class MessageDAO {
     private static final String TOP_USER = "SELECT user_id FROM message WHERE send_date BETWEEN ? AND ? GROUP BY user_id ORDER BY COUNT(*) DESC LIMIT 1";
     private static final String TOP_ROOM = "SELECT room_id FROM message WHERE send_date BETWEEN ? AND ? GROUP BY room_id ORDER BY COUNT(*) DESC LIMIT 1";
     
-    // Phương thức lấy tất cả các tin nhắn
     public List<Message> layTatCa() {
         List<Message> messages = new ArrayList<>();
         Connection connection = null;
@@ -57,7 +57,6 @@ public class MessageDAO {
         return messages;
     }
     
-    // Phương thức thêm tin nhắn mới
     public Message them(Message message) {
         Connection connection = null;
         
@@ -68,6 +67,8 @@ public class MessageDAO {
             statement.setTimestamp(2, new Timestamp(message.getSendDate().getTime()));
             statement.setInt(3, message.getUserId());
             statement.setInt(4, message.getRoomId());
+            statement.setInt(5, message.getMessageTypeId());
+
             
             int affectedRows = statement.executeUpdate();
             
@@ -92,7 +93,6 @@ public class MessageDAO {
         return message;
     }
     
-    // Phương thức cập nhật tin nhắn
     public boolean capNhat(Message message) {
         Connection connection = null;
         
@@ -103,7 +103,9 @@ public class MessageDAO {
             statement.setTimestamp(2, new Timestamp(message.getSendDate().getTime()));
             statement.setInt(3, message.getUserId());
             statement.setInt(4, message.getRoomId());
-            statement.setInt(5, message.getId());
+            statement.setInt(5, message.getMessageTypeId());
+            statement.setInt(6, message.getId());
+
             
             int affectedRows = statement.executeUpdate();
             return affectedRows > 0;
@@ -116,7 +118,6 @@ public class MessageDAO {
         }
     }
     
-    // Phương thức xóa tin nhắn
     public boolean xoa(int id) {
         Connection connection = null;
         
@@ -136,7 +137,6 @@ public class MessageDAO {
         }
     }
     
-    // Phương thức tìm kiếm tin nhắn theo nội dung
     public List<Message> timKiem(String keyword) {
         List<Message> messages = new ArrayList<>();
         Connection connection = null;
@@ -161,7 +161,6 @@ public class MessageDAO {
         return messages;
     }
     
-    // Phương thức trích xuất thông tin tin nhắn từ ResultSet
     private Message extractMessageFromResultSet(ResultSet resultSet) throws SQLException {
         Message message = new Message();
         message.setId(resultSet.getInt("id"));
@@ -169,36 +168,12 @@ public class MessageDAO {
         message.setSendDate(new Date(resultSet.getTimestamp("send_date").getTime()));
         message.setUserId(resultSet.getInt("user_id"));
         message.setRoomId(resultSet.getInt("room_id"));
+        message.setMessageTypeId(resultSet.getInt("message_type_id"));
+
         return message;
     }
     
-    
-    // Phương thức lấy tin nhắn trong khoảng thời gian
-    public List<Message> layTheoKhoangThoiGian(Date tuNgay, Date denNgay) {
-        List<Message> messages = new ArrayList<>();
-        Connection connection = null;
-        
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM message WHERE send_date BETWEEN ? AND ? ORDER BY send_date DESC");
-            statement.setTimestamp(1, new Timestamp(tuNgay.getTime()));
-            statement.setTimestamp(2, new Timestamp(denNgay.getTime()));
-            ResultSet resultSet = statement.executeQuery();
-            
-            while (resultSet.next()) {
-                messages.add(extractMessageFromResultSet(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Lỗi khi lấy tin nhắn trong khoảng thời gian", e);
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-        
-        return messages;
-    }
+
     
     
     public MessageStatistics thongKe(Date from, Date to) {

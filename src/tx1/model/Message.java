@@ -14,29 +14,28 @@ public class Message {
     private Date sendDate;
     private int userId;
     private int roomId;
-    
-    // Constructor mặc định
+    private int messageTypeId; 
+
     public Message() {
     }
-    
-    // Constructor với tất cả tham số
-    public Message(int id, String content, Date sendDate, int userId, int roomId) {
+
+    public Message(int id, String content, Date sendDate, int userId, int roomId, int messageTypeId) {
         this.id = id;
         this.content = content;
         this.sendDate = sendDate;
         this.userId = userId;
         this.roomId = roomId;
+        this.messageTypeId = messageTypeId;
     }
-    
-    // Constructor không có ID (dùng khi tạo message mới)
-    public Message(String content, Date sendDate, int userId, int roomId) {
+
+    public Message(String content, Date sendDate, int userId, int roomId, int messageTypeId) {
         this.content = content;
         this.sendDate = sendDate;
         this.userId = userId;
         this.roomId = roomId;
+        this.messageTypeId = messageTypeId;
     }
-    
-    // Các phương thức getter và setter
+
     public int getId() {
         return id;
     }
@@ -76,7 +75,15 @@ public class Message {
     public void setRoomId(int roomId) {
         this.roomId = roomId;
     }
-    
+
+    public int getMessageTypeId() {
+        return messageTypeId;
+    }
+
+    public void setMessageTypeId(int messageTypeId) {
+        this.messageTypeId = messageTypeId;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -85,6 +92,7 @@ public class Message {
                 ", sendDate=" + sendDate +
                 ", userId=" + userId +
                 ", roomId=" + roomId +
+                ", messageTypeId=" + messageTypeId +
                 '}';
     }
 }

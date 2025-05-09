@@ -1,3 +1,5 @@
+package tx1;
+
 
 import java.awt.HeadlessException;
 import java.text.ParseException;
@@ -38,11 +40,12 @@ public class view extends javax.swing.JFrame {
                 int manguoigui = (int) tableMessages.getValueAt(row, 2);
                 Date thoigiangui = (Date) tableMessages.getValueAt(row, 3);
                 int maphong = (int) tableMessages.getValueAt(row, 4);
+                Object value = tableMessages.getValueAt(row, 5);
+                int kieutinnhan = (value != null) ? (int) value : 0;
+
                 
-                
-                Message message = new Message(id, content, thoigiangui, manguoigui, maphong);
+                Message message = new Message(id, content, thoigiangui, manguoigui, maphong, kieutinnhan);
                 selectedMessage = message;
-                // Hiển thị lên ô nhập
                 inputMessage.setText(content);
             }
         });
@@ -78,6 +81,7 @@ public class view extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         btnTK = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -152,11 +156,11 @@ public class view extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nội dung", "Mã người gửi", "Thời gian gửi", "Mã phòng"
+                "ID", "Nội dung", "Mã người gửi", "Thời gian gửi", "Mã phòng", "Kiểu tin nhắn"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -168,7 +172,6 @@ public class view extends javax.swing.JFrame {
             tableMessages.getColumnModel().getColumn(0).setPreferredWidth(1);
         }
 
-        inputSearch.setForeground(new java.awt.Color(204, 204, 204));
         inputSearch.setToolTipText("");
         inputSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -248,6 +251,9 @@ public class view extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setForeground(new java.awt.Color(255, 51, 0));
+        jLabel4.setText("*Vui lòng nhập định dạng  yyyy-mm-dd");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -272,7 +278,8 @@ public class view extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(inputTo, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(63, 63, 63)
-                                .addComponent(btnTK)))))
+                                .addComponent(btnTK))
+                            .addComponent(jLabel4))))
                 .addContainerGap(163, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -294,7 +301,9 @@ public class view extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(jLabel8)
                     .addComponent(btnTK))
-                .addContainerGap(208, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel4)
+                .addContainerGap(172, Short.MAX_VALUE))
         );
 
         pack();
@@ -308,7 +317,7 @@ public class view extends javax.swing.JFrame {
             return;
         }
 
-        Message newMessage = new Message(content, new Date(), 1, 1); 
+        Message newMessage = new Message(content, new Date(), 1, 1,1); 
         Message insertedMessage = messageDAO.them(newMessage);
 
         if (insertedMessage != null) {
@@ -382,7 +391,6 @@ public class view extends javax.swing.JFrame {
         String startStr = inputFrom.getText().trim();
         String endStr = inputTo.getText().trim();
 
-        // Validate định dạng ngày
         if (!isValidDate(startStr)) {
             JOptionPane.showMessageDialog(this, "Ngày bắt đầu không hợp lệ. Định dạng đúng: yyyy-MM-dd");
             return;
@@ -428,7 +436,8 @@ public class view extends javax.swing.JFrame {
             msg.getContent(),
             msg.getUserId(),
             msg.getSendDate(),
-            msg.getRoomId()
+            msg.getRoomId(),
+            msg.getMessageTypeId()
         };
         model.addRow(row);
     }
@@ -446,7 +455,9 @@ public class view extends javax.swing.JFrame {
             msg.getContent(),
             msg.getUserId(),
             msg.getSendDate(),
-            msg.getRoomId()
+            msg.getRoomId(),
+            msg.getMessageTypeId()
+                
         };
         model.addRow(row);
     }
@@ -514,6 +525,7 @@ public class view extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;

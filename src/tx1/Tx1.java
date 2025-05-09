@@ -5,11 +5,7 @@
 package tx1;
 
 import tx1.config.ConnectionPool;
-import tx1.dao.MessageDAO;
-import tx1.model.Message;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
 /**
  *
  * @author ninhdo
@@ -22,18 +18,20 @@ public class Tx1 {
  
      public static void main(String[] args) {
          try {
-            // ConnectionPool sẽ tự động khởi tạo khi getInstance() được gọi lần đầu tiên
             System.out.println("Khởi tạo Connection Pool...");
             
-            // Hiển thị thông tin về pool
             ConnectionPool pool = ConnectionPool.getInstance();
             System.out.println("Tổng số kết nối: " + pool.getSize());
             System.out.println("Số kết nối khả dụng: " + pool.getAvailableConnections());
             
             
-            // Khi kết thúc ứng dụng, đóng tất cả các kết nối
-            System.out.println("Đóng Connection Pool...");
-            pool.shutdown();
+            System.out.println("Hiển thị giao diện...");
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    new view().setVisible(true);
+                }
+            });
+           
             
         } catch (Exception e) {
             System.err.println("Lỗi: " + e.getMessage());
